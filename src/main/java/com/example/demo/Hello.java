@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import javax.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class Hello {
+
+    //looks for personRepository interface
+    @Autowired
+    PersonRepository personRepository;
 
     //localhost:8080/hello?name=<name>
     @GetMapping("/hello")
@@ -42,6 +47,15 @@ public class Hello {
         if (result.hasErrors()){                                //check for errors
             return "person_form";                               //if errors return the form to the user
         }
+        personRepository.save(person);                          //save to the database
         return "person_show";                                   //no errors return person_show.html
+    }
+
+    //gets a list of all the persons in the repositoryRepository
+    @GetMapping("/person")
+    public String getAllPeople(Model model){
+        Iterable<Person> people = personRepository.findAll();
+        model.addAttribute("persons", people);
+        return "person_list";
     }
 }
